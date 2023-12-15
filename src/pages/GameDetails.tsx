@@ -1,24 +1,51 @@
-import { useState } from "react";
 import { useGameData } from "../hooks/useGameData";
 import { Helmet } from "react-helmet-async";
-import StackedBarChart from "../features/StackedBarChart";
-import UmpSupplyInput from "../features/UmpSupplyInput";
 import {
   Box,
-  Center,
   Container,
   VStack,
   Text,
 } from "@chakra-ui/react";
 
-const GameDetails = ({ gamePk, updateTotalBalls }) => {
-  const { data } = useGameData(gamePk);
+interface GameDetailsProps {
+  gamePk: any;
+}
 
-  const [umpSupply, setUmpSupply] = useState(0);
+interface Play {
+  gamePk: any;
+  batter: any;
+  batterName: any;
+  batSide: any;
+  pitcher: any;
+  pitcherName: any;
+  pitchHand: any;
+  result: any;
+  inning: any;
+  batterTeam: any;
+  halfInning: any;
+  atBatIndex: any;
+  playLength: any;
+  id: any;
+  playEventDescriptions: any[];
+}
 
-  const handleUmpSupplyChange = (newUmpSupply) => {
-    setUmpSupply(newUmpSupply);
-  };
+const GameDetails = ({ gamePk }: GameDetailsProps) => {
+  const { data, isError, isLoading } = useGameData(gamePk);
+
+  // Check if data is still loading
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  // Check if there was an error fetching the data
+  if (isError) {
+    return <div>Error loading data</div>;
+  }
+
+  // Check if data is available and has the expected structure
+  if (!data || !data.data || !data.data.liveData || !data.data.liveData.boxscore) {
+    return <div>No valid data available</div>;
+  }
 
   const teamData = data.data.liveData.boxscore.teams
   const away_pitches = teamData.away.teamStats.pitching.pitchesThrown
@@ -39,7 +66,7 @@ const GameDetails = ({ gamePk, updateTotalBalls }) => {
   const away_team = gameData.teams.away.abbreviation;
   const game_date = gameData.datetime.officialDate;
 
-  const reformatAPIGameDate = (game_date) => {
+  const reformatAPIGameDate = (game_date: any) => {
     const dateParts = game_date.split("-");
     const day = dateParts[2];
     const month = dateParts[1];
@@ -49,106 +76,53 @@ const GameDetails = ({ gamePk, updateTotalBalls }) => {
   const reformattedDate = reformatAPIGameDate(game_date);
 
   // Initialize an array to hold play data
-  const playsOutput = [];
+  const playsOutput: Play[] = [];
 
   for (let i = 0; i < total_plays; i++) {
-    const play = {};
     const ab = allPlays[i];
     const playLength = typeof ab.playEvents !== "undefined" ? ab.playEvents.length : 1;
-    play.gamePk = gamePk;
-    play.batter = ab.matchup.batter.id;
-    play.batterName = ab.matchup.batter.fullName;
-    play.batSide = ab.matchup.batSide.code;
-    play.pitcher = ab.matchup.pitcher.id;
-    play.pitcherName = ab.matchup.pitcher.fullName;
-    play.pitchHand = ab.matchup.pitchHand.code;
-    play.result = ab.result.event;
-    play.inning = ab.about.inning;
+
+    const play: Play = {
+      gamePk,
+      batter: ab.matchup.batter.id,
+      batterName: ab.matchup.batter.fullName,
+      batSide: ab.matchup.batSide.code,
+      pitcher: ab.matchup.pitcher.id,
+      pitcherName: ab.matchup.pitcher.fullName,
+      pitchHand: ab.matchup.pitchHand.code,
+      result: ab.result.event,
+      inning: ab.about.inning,
+      batterTeam: ab.about.halfInning === 'top' ? away_team : home_team,
+      halfInning: ab.about.halfInning,
+      atBatIndex: ab.atBatIndex,
+      playLength: playLength,
+      id: `${gamePk}-${ab.matchup.batter.id}-${ab.matchup.pitcher.id}-${ab.about.inning}-${ab.atBatIndex}-${playLength}`,
+      playEventDescriptions: [],
+    };
+
     if (ab.about.halfInning === 'top') {
       play.batterTeam = away_team
     } else { play.batterTeam = home_team }
-    play.halfInning = ab.about.halfInning;
-    play.atBatIndex = ab.atBatIndex;
-    play.playLength = playLength;
+
     play.id = `${play.gamePk}-${play.batter}-${play.pitcher}-${play.inning}-${play.atBatIndex}-${play.playLength}`;
 
     // Initialize an array to hold descriptions for each play
     play.playEventDescriptions = [];
 
     // Check if playEvents are available and add descriptions to the array
-    ab.playEvents.forEach((event) => {
+    ab.playEvents.forEach((event: any) => {
       if (event.details && event.details.description) {
         play.playEventDescriptions.push(event.details.description);
       }
     });
-
-    // Create filter to push playEvents into a usedBall array
-    const usedBallFilter = ["In play", "Foul", "In Dirt", "Blocked", "Pitching Change", "Wild", "Hit", "Passed", "Steal"];
-
-    play.usedBalls = play.playEventDescriptions.filter((description) => {
-      return usedBallFilter.some((word) => description.includes(word));
-    });
-
-    // Check if batter struck out swinging to end the inning
-    if ((play.playEventDescriptions[play.playEventDescriptions.length - 1] === "Called Strike" ||
-      play.playEventDescriptions[play.playEventDescriptions.length - 1] === "Swinging Strike") &&
-      ab.count.outs === 3) {
-      play.usedBalls.push('Inning ending strikeout')
-    }
 
     playsOutput.push(play);
   }
 
   console.log("playsOutput:", playsOutput);
 
-  // Initialize ballData array to pass to bar graph
-  const ballData = [];
-
-  // Iterate through playsOutput to collect data by inning
-  playsOutput.forEach((play) => {
-    const { inning, batterTeam, usedBalls } = play;
-
-    // Find or create an entry for the inning in ballData
-    const inningEntry = ballData.find((entry) => entry.inning === inning);
-
-    if (!inningEntry) {
-      // Initialize a new entry for the inning with the 'name' key
-      const newInningEntry = {
-        inning,
-        [home_team]: 0,
-        [away_team]: 0,
-        amt: 0,
-      };
-
-      // Set the counts for the batter's team
-      newInningEntry[batterTeam] += usedBalls.length;
-      newInningEntry.amt += usedBalls.length;
-
-      // Push the new entry to ballData
-      ballData.push(newInningEntry);
-    } else {
-      // Update the counts for the existing inning entry
-      inningEntry[batterTeam] += usedBalls.length;
-      inningEntry.amt += usedBalls.length;
-    }
-  });
-
-  console.log("ballData:", ballData);
-
-  // Total events that used a ball
-  const usedBallEvents = ballData.reduce((total, inningEntry) => {
-    return total + inningEntry.amt;
-  }, 0);
-
-  // Account for events not tracked in API (i.e. warm ups, tossed out by pitchers, etc.) 
-  const slopFactor = Math.round(total_pitches / 30)
-
-  const totalBalls = usedBallEvents + slopFactor + umpSupply
-
-  updateTotalBalls(totalBalls)
-
   return (
-    <Box align="center">
+    <Box alignContent="center">
       <Helmet>
         <title>{away_team}@{home_team} {reformattedDate}</title>
         <meta name="description" content="Tracking the number of baseballs used during MLB games." />
@@ -156,10 +130,7 @@ const GameDetails = ({ gamePk, updateTotalBalls }) => {
       <VStack>
         {total_pitches > 0 ? (
           <Box padding='4px'>
-            <Center>
-            <UmpSupplyInput onUmpSupplyChange={handleUmpSupplyChange} umpSupply={umpSupply} />
-            </Center>
-            <StackedBarChart ballData={ballData} homeTeam={home_team} awayTeam={away_team} totalBalls={totalBalls} />
+            <Text>PLACEHOLDER</Text>
           </Box>
         ) : (
           <Text>no baseball data available</Text>

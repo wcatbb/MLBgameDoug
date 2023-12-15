@@ -1,8 +1,11 @@
 import { Input } from "@chakra-ui/react"
 
-const DatePicker = ({ isoDate, onDateChange }) => {
+const DatePicker = ({
+    isoDate,
+    onDateChange
+}: any) => {
 
-    const handleDateChange = (event) => {
+    const handleDateChange = (event: any) => {
         const inputValue = event.target.value;
         let newDate;
 

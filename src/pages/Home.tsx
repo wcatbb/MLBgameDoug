@@ -25,29 +25,24 @@ const Home = () => {
 
   const [isoDate, setIsoDate] = useState(formattedDate);
   const [gamePk, setGamePk] = useState(null);
-  const [totalBalls, setTotalBalls] = useState(null);
 
   const { reset } = useQueryErrorResetBoundary();
 
 
 
-  const handleDateChange = (newIsoDate) => {
+  const handleDateChange = (newIsoDate: any) => {
     setIsoDate(newIsoDate);
     setGamePk(null);
   };
 
-  const handleGamePkChange = (newGamePk) => {
+  const handleGamePkChange = (newGamePk: any) => {
     setGamePk(newGamePk);
-  };
-
-  const updateTotalBalls = (data) => {
-    setTotalBalls(data);
   };
 
   return (
     <Box>
-      <Header totalBalls={totalBalls} />
-      <Box position='relative' padding='6'>
+      <Header />
+      <Box position='relative' padding={6}>
         <Divider />
         <AbsoluteCenter>
           <Container maxW='180px'>
@@ -55,7 +50,7 @@ const Home = () => {
           </Container>
         </AbsoluteCenter>
       </Box>
-      <VStack marginTop='2'>
+      <VStack marginTop={2}>
         <ErrorBoundary
           onReset={reset}
           fallbackRender={({ resetErrorBoundary }) => (
@@ -66,7 +61,7 @@ const Home = () => {
           )}
         >
           <Suspense fallback={<Container maxW='80%'><Skeleton height='80px' /></Container>}>
-            {gamePk !== null && <GameDetails gamePk={gamePk} updateTotalBalls={updateTotalBalls} />}
+            {gamePk !== null && <GameDetails gamePk={gamePk} />}
             <Schedule isoDate={isoDate} onGameClick={handleGamePkChange} />
           </Suspense>
         </ErrorBoundary>

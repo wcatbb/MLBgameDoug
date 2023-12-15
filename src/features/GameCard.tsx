@@ -11,10 +11,21 @@ import {
     CardBody,
 } from '@chakra-ui/react'
 
-const GameCard = ({ gamePk, selected, onClick }) => {
+interface GameCardProps {
+    gamePk: number;
+    selected: boolean;
+    onClick: (gamePk: number) => void;
+}
+
+const GameCard: React.FC<GameCardProps> = ({ gamePk, selected, onClick }) => {
     const cardClassName = selected ? 'selected' : 'elevated';
 
     const { data } = useGameData(gamePk)
+
+    if (!data || !data.data || !data.data.gameData || !data.data.liveData) {
+        // If data or its nested properties are undefined, handle accordingly
+        return null; // or display an error message
+    }
 
     const gameData = data.data.gameData
     const game_status = gameData.status.abstractGameState

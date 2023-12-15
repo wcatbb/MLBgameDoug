@@ -6,33 +6,39 @@ import {
     Text
 } from "@chakra-ui/react"
 
-const Schedule = ({ isoDate, onGameClick, totalBalls }) => {
-    const [selectedGamePk, setSelectedGamePk] = useState(null)
+interface ScheduleProps {
+    isoDate: string;
+    onGameClick: (gamePk: any) => void;
+}
 
-    const handleGameCardClick = (gamePk) => {
+type GamePk = number;
+
+const Schedule: React.FC<ScheduleProps> = ({ isoDate, onGameClick }) => {
+    const [selectedGamePk, setSelectedGamePk] = useState<GamePk | null>(null);
+
+    const handleGameCardClick = (gamePk: GamePk) => {
         setSelectedGamePk(gamePk);
         onGameClick(gamePk);
-    }
+    };
 
-    const { data } = useScheduleData(isoDate)
+    const { data } = useScheduleData(isoDate);
 
-    if (data?.length === 0) {
+    if (!data || data.length === 0) {
         return <Text>no games on schedule</Text>;
     }
 
     return (
         <SimpleGrid minChildWidth='180px' spacing='4px' maxW='100%'>
-            {data?.map(gamePk => (
+            {data.map((gamePk: GamePk) => (
                 <GameCard
                     key={gamePk}
                     gamePk={gamePk}
                     selected={gamePk === selectedGamePk}
-                    totalBalls={totalBalls}
                     onClick={() => handleGameCardClick(gamePk)}
                 />
             ))}
         </SimpleGrid>
     );
-}
+};
 
-export default Schedule
+export default Schedule;
