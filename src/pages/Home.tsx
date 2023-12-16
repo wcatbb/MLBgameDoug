@@ -28,8 +28,6 @@ const Home = () => {
 
   const { reset } = useQueryErrorResetBoundary();
 
-
-
   const handleDateChange = (newIsoDate: any) => {
     setIsoDate(newIsoDate);
     setGamePk(null);
@@ -50,7 +48,7 @@ const Home = () => {
           </Container>
         </AbsoluteCenter>
       </Box>
-      <VStack marginTop={2}>
+      <VStack marginTop={4}>
         <ErrorBoundary
           onReset={reset}
           fallbackRender={({ resetErrorBoundary }) => (
@@ -60,10 +58,12 @@ const Home = () => {
             </Box>
           )}
         >
-          <Suspense fallback={<Container maxW='80%'><Skeleton height='80px' /></Container>}>
-            {gamePk !== null && <GameDetails gamePk={gamePk} />}
+          <Container maxW='80%' >
+            <Suspense fallback={<Skeleton height='70px' />}>
             <Schedule isoDate={isoDate} onGameClick={handleGamePkChange} />
-          </Suspense>
+              {gamePk !== null && <GameDetails gamePk={gamePk} />}
+            </Suspense>
+          </Container>
         </ErrorBoundary>
       </VStack>
     </Box>

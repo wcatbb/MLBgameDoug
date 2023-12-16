@@ -96,9 +96,11 @@ const GameCard: React.FC<GameCardProps> = ({ gamePk, selected, onClick }) => {
 
     return (
         <Card
+        marginX={.25}
+        marginY={.5}
             size='sm'
-            minWidth='180px'
-            maxWidth='180px'
+            minWidth='150px'
+            maxWidth='150px'
             minHeight='70px'
             variant={cardClassName}
             onClick={() => onClick(gamePk)}

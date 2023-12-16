@@ -2,8 +2,8 @@ import { useState } from "react"
 import { useScheduleData } from "../hooks/useScheduleData"
 import GameCard from "./GameCard"
 import {
-    SimpleGrid,
-    Text
+    Text,
+    HStack,
 } from "@chakra-ui/react"
 
 interface ScheduleProps {
@@ -24,11 +24,11 @@ const Schedule: React.FC<ScheduleProps> = ({ isoDate, onGameClick }) => {
     const { data } = useScheduleData(isoDate);
 
     if (!data || data.length === 0) {
-        return <Text>no games on schedule</Text>;
+        return <Text align='center'>no games on schedule</Text>;
     }
 
     return (
-        <SimpleGrid minChildWidth='180px' spacing='4px' maxW='100%'>
+        <HStack spacing={1} overflowX="auto">
             {data.map((gamePk: GamePk) => (
                 <GameCard
                     key={gamePk}
@@ -37,7 +37,7 @@ const Schedule: React.FC<ScheduleProps> = ({ isoDate, onGameClick }) => {
                     onClick={() => handleGameCardClick(gamePk)}
                 />
             ))}
-        </SimpleGrid>
+        </HStack>
     );
 };
 

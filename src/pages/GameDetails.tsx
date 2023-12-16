@@ -1,5 +1,6 @@
 import { useGameData } from "../hooks/useGameData";
 import { Helmet } from "react-helmet-async";
+import KZone from "../features/KZone";
 import {
   Box,
   Container,
@@ -125,12 +126,12 @@ const GameDetails = ({ gamePk }: GameDetailsProps) => {
     <Box alignContent="center">
       <Helmet>
         <title>{away_team}@{home_team} {reformattedDate}</title>
-        <meta name="description" content="Tracking the number of baseballs used during MLB games." />
+        <meta name="description" content="MLB Gameday (but jankier)" />
       </Helmet>
       <VStack>
         {total_pitches > 0 ? (
           <Box padding='4px'>
-            <Text>PLACEHOLDER</Text>
+            <KZone />
           </Box>
         ) : (
           <Text>no baseball data available</Text>
