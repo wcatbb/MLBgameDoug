@@ -26,7 +26,7 @@ const PitchSequence = () => {
     })
 
     return (
-        <Stepper index={activeStep} orientation='vertical' height='150px' gap='0' size="sm" margin={1}>
+        <Stepper index={activeStep} orientation='vertical' height='100px' gap='0' size="xs">
             {steps.map((step, index) => (
                 <Step key={index}>
                     <StepIndicator>
@@ -36,12 +36,10 @@ const PitchSequence = () => {
                             active={<StepNumber />}
                         />
                     </StepIndicator>
-
-                    <Box flexShrink='0'>
+                    <Box >
                         <StepTitle>{step.title}</StepTitle>
                         <StepDescription>{step.description}</StepDescription>
                     </Box>
-
                     <StepSeparator />
                 </Step>
             ))}
