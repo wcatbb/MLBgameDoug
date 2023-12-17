@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Header from '../components/Header';
 import Schedule from '../features/Schedule';
 import DatePicker from '../features/DatePicker';
-import GameDetails from '../components/_GameDetails';
+import GameDetails from '../components/GameDetails';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useQueryErrorResetBoundary } from '@tanstack/react-query';
 import { Suspense } from 'react';
