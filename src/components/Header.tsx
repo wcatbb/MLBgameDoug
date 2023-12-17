@@ -1,4 +1,4 @@
-import Logo from './Logo';
+import Logo from '../features/Logo';
 import { ColorModeSwitcher } from '../theme/ColorModeSwitcher';
 import {
     Box,

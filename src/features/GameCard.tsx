@@ -96,8 +96,8 @@ const GameCard: React.FC<GameCardProps> = ({ gamePk, selected, onClick }) => {
 
     return (
         <Card
-        marginX={.25}
-        marginY={.5}
+            marginX={.25}
+            marginY={.5}
             size='sm'
             minWidth='150px'
             maxWidth='150px'

@@ -28,7 +28,7 @@ const Home = () => {
 
   const { reset } = useQueryErrorResetBoundary();
 
-  const handleDateChange = (newIsoDate: any) => {
+  const handleScheduleChange = (newIsoDate: any) => {
     setIsoDate(newIsoDate);
     setGamePk(null);
   };
@@ -44,7 +44,7 @@ const Home = () => {
         <Divider />
         <AbsoluteCenter>
           <Container maxW='180px'>
-            <DatePicker isoDate={isoDate} onDateChange={handleDateChange} />
+            <DatePicker isoDate={isoDate} onDateChange={handleScheduleChange} />
           </Container>
         </AbsoluteCenter>
       </Box>
@@ -52,10 +52,10 @@ const Home = () => {
         <ErrorBoundary
           onReset={reset}
           fallbackRender={({ resetErrorBoundary }) => (
-            <Box alignContent='center'>
+            <VStack justify='center'>
               <Text>There was an error!</Text>
               <Button onClick={() => resetErrorBoundary()}>Try again</Button>
-            </Box>
+            </VStack>
           )}
         >
           <Container maxW='80%' >
