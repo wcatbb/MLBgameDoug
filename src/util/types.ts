@@ -48,4 +48,8 @@ export interface BoxScoreTypes {
       leftOnBase: number;
     };
   }>;
+  players: Record<string, {
+    id: number;
+    fullName: string;
+  }>;
 }

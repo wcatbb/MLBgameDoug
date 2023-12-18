@@ -1,22 +1,30 @@
 import {
-  HStack,
+  SimpleGrid,
   VStack,
   Table,
   Thead,
   Tbody,
   Tr,
   Th,
-  Td
+  Td,
 } from "@chakra-ui/react";
 import LineScore from "../features/LineScore";
-import { BoxScoreTypes } from '../util/types';
+import { BoxScoreTypes } from "../util/types";
 
 interface BoxScoreProps {
-  boxScoreData: BoxScoreTypes
+  boxScoreData: BoxScoreTypes;
 }
 
 const BoxScore: React.FC<BoxScoreProps> = ({ boxScoreData }) => {
+  const rowHeight = "30px";
 
+  //Return player name based on ID
+  const getPlayerName = (id: number): string => {
+    const playerIdKey = `ID${id}`;
+    const player = boxScoreData.players[playerIdKey];
+    return player ? player.fullName : "";
+  };
+  
   return (
     <VStack>
       <LineScore
@@ -30,17 +38,19 @@ const BoxScore: React.FC<BoxScoreProps> = ({ boxScoreData }) => {
         homeErrors={boxScoreData.homeErrors}
         awayErrors={boxScoreData.awayErrors}
       />
-      <HStack align="top" minW="sm">
-        <Table variant="striped" size="sm">
+      <SimpleGrid columns={2} spacing={2} minW="xs">
+        <Table variant="striped" size="xs">
           <Thead>
             <Tr>
-              <Th bg="teal.500" color="white">{boxScoreData.homeTeam} Hitters</Th>
+              <Th bg="teal.500" color="white">
+                {boxScoreData.homeTeam} Hitters
+              </Th>
             </Tr>
           </Thead>
           <Tbody>
-            {boxScoreData.homeOrder.map((hitter, index) => (
-              <Tr key={`hitter-${index}`}>
-                <Td>{hitter}</Td>
+            {boxScoreData.homeOrder.map((hitterId, index) => (
+              <Tr key={`hitter-${index}`} height={rowHeight}>
+                <Td>{getPlayerName(hitterId)}</Td>
               </Tr>
             ))}
           </Tbody>
@@ -50,23 +60,25 @@ const BoxScore: React.FC<BoxScoreProps> = ({ boxScoreData }) => {
             </Tr>
           </Thead>
           <Tbody>
-            {boxScoreData.homePitchers.map((pitcher, index) => (
-              <Tr key={`pitcher-${index}`}>
-                <Td>{pitcher}</Td>
+            {boxScoreData.homePitchers.map((pitcherId, index) => (
+              <Tr key={`pitcher-${index}`} height={rowHeight}>
+                <Td>{getPlayerName(pitcherId)}</Td>
               </Tr>
             ))}
           </Tbody>
         </Table>
-        <Table variant="striped" size="sm">
+        <Table variant="striped" size="xs">
           <Thead>
             <Tr>
-              <Th bg="teal.500" color="white">{boxScoreData.awayTeam} Hitters</Th>
+              <Th bg="teal.500" color="white">
+                {boxScoreData.awayTeam} Hitters
+              </Th>
             </Tr>
           </Thead>
           <Tbody>
-            {boxScoreData.awayOrder.map((hitter, index) => (
-              <Tr key={`hitter-${index}`}>
-                <Td>{hitter}</Td>
+            {boxScoreData.awayOrder.map((hitterId, index) => (
+              <Tr key={`hitter-${index}`} height={rowHeight}>
+                <Td>{getPlayerName(hitterId)}</Td>
               </Tr>
             ))}
           </Tbody>
@@ -76,14 +88,14 @@ const BoxScore: React.FC<BoxScoreProps> = ({ boxScoreData }) => {
             </Tr>
           </Thead>
           <Tbody>
-            {boxScoreData.awayPitchers.map((pitcher, index) => (
-              <Tr key={`pitcher-${index}`}>
-                <Td>{pitcher}</Td>
+            {boxScoreData.awayPitchers.map((pitcherId, index) => (
+              <Tr key={`pitcher-${index}`} height={rowHeight}>
+                <Td>{getPlayerName(pitcherId)}</Td>
               </Tr>
             ))}
           </Tbody>
         </Table>
-      </HStack>
+      </SimpleGrid>
     </VStack>
   );
 };

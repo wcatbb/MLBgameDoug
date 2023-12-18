@@ -17,7 +17,7 @@ const PitchSequence = () => {
         { title: 'Ball', description: '89.3 mph Sinker' },
         { title: 'Called Strike', description: '90 mph Sinker' },
         { title: 'Foul', description: '89.8 mph Four-Seam Fastball' },
-        { title: 'Swinging Strike', description: '84.4 mph Slider' },
+        { title: 'In Play Out(s)', description: '84.4 mph Slider' },
     ]
 
     const { activeStep } = useSteps({

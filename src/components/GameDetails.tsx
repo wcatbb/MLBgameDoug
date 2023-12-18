@@ -19,11 +19,11 @@ import { PlayTypes } from "../util/types";
 import { reformatAPIGameDate } from "../util/helpers";
 
 interface GameDetailsProps {
-  gamePk: any;
+  gamePk: any
 }
 
 const GameDetails = ({ gamePk }: GameDetailsProps) => {
-  const { data, isError, isLoading } = useGameData(gamePk);
+  const { data, isError, isLoading } = useGameData(gamePk)
 
   // Check if data is still loading
   if (isLoading) {
@@ -43,9 +43,10 @@ const GameDetails = ({ gamePk }: GameDetailsProps) => {
   //GAME DATA DEFINITIONS
   const gameData = data.data.gameData;
   const gameStatus: string = gameData.status.abstractGameState
-  const homeTeam: string = gameData.teams.home.abbreviation;
-  const awayTeam: string = gameData.teams.away.abbreviation;
-  const gameDate: string = gameData.datetime.officialDate;
+  const homeTeam: string = gameData.teams.home.abbreviation
+  const awayTeam: string = gameData.teams.away.abbreviation
+  const gameDate: string = gameData.datetime.officialDate
+  const players = gameData.players 
 
   //BOX SCORE DEFINITIONS
   const boxScore = data.data.liveData.boxscore
@@ -65,20 +66,20 @@ const GameDetails = ({ gamePk }: GameDetailsProps) => {
   const homeErrors = lineScore.teams.away.errors
 
   //PLAY-BY-PLAY DEFINITIONS
-  const allPlays = data.data.liveData.plays.allPlays;
-  const totalPlays = allPlays.length;
-  const currentPlay = allPlays[totalPlays - 1]?.result.description;
-  const previousPlay = allPlays[totalPlays - 2]?.result.description;
-  const lastPlay: string = currentPlay === undefined ? previousPlay : currentPlay;
+  const allPlays = data.data.liveData.plays.allPlays
+  const totalPlays = allPlays.length
+  const currentPlay = allPlays[totalPlays - 1]?.result.description
+  const previousPlay = allPlays[totalPlays - 2]?.result.description
+  const lastPlay: string = currentPlay === undefined ? previousPlay : currentPlay
 
   // Initialize an array to hold play-by-play data
-  const playsOutput: PlayTypes[] = [];
+  const playsOutput: PlayTypes[] = []
 
   // Iterate through plays to build AB objects
   for (let i = 0; i < totalPlays; i++) {
-    const ab = allPlays[i];
+    const ab = allPlays[i]
     // If play has 0 events, default to 1
-    const playLength = typeof ab.playEvents !== "undefined" ? ab.playEvents.length : 1;
+    const playLength = typeof ab.playEvents !== "undefined" ? ab.playEvents.length : 1
 
     const play: PlayTypes = {
       gamePk,
@@ -122,6 +123,7 @@ const GameDetails = ({ gamePk }: GameDetailsProps) => {
   //DATA OBJECTS
   const boxScoreData: BoxScoreTypes = {
     gameStatus,
+    players,
     homeTeam,
     awayTeam,
     homeOrder,

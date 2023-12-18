@@ -14,9 +14,9 @@ const data = [
   { x: 100, y: 200, z: 200 },
   { x: 120, y: 100, z: 260 },
   { x: 170, y: 300, z: 400 },
-  { x: 250, y: 350, z: 500 }, // Point outside the grid
+  { x: 250, y: 350, z: 500 },
 ];
-const COLORS = ['cyan', '#90EE90', 'red'];
+const COLORS = ['red', 'red', 'cyan', '#90EE90'];
 
 const KZone = () => {
   return (
@@ -26,7 +26,7 @@ const KZone = () => {
         <CartesianGrid stroke="transparent" fill="grey" fillOpacity={0.1} />
         <XAxis hide type="number" dataKey="x" name="height" unit="cm" interval={0} tickCount={4} />
         <YAxis hide type="number" dataKey="y" name="weight" unit="kg" interval={0} tickCount={4} />
-        <Tooltip cursor={false} />
+        <Tooltip />
         <Scatter name="KZone" data={data} fill="#8884d8">
           {data.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

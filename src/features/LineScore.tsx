@@ -49,7 +49,7 @@ const LineScore: React.FC<LineScoreProps> = ({
   const inningNumbers = innings.map(inning => inning.num);
 
   return (
-    <Table variant="striped" size="xs" minW="sm" maxW="sm">
+    <Table variant="striped" size="xs" minW="sm" maxW="md">
       <Thead>
         <Tr>
           <Th borderTop="1px solid" borderRight="1px solid" borderColor="gray.300" bg="teal.500" color="white">Team</Th>
