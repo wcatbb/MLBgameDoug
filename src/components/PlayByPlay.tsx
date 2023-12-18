@@ -1,41 +1,51 @@
+import React from 'react';
+import { PlayTypes } from '../util/types';
 import {
     Accordion,
     AccordionItem,
     AccordionButton,
     AccordionPanel,
     AccordionIcon,
-    Box
-} from '@chakra-ui/react'
+    Box,
+    Heading,
+    ListItem,
+    OrderedList,
+} from '@chakra-ui/react';
 
-const PlayByPlay = () => {
-    return (
-        <Accordion allowToggle>
-            <AccordionItem>
-                <h2>
-                    <AccordionButton>
-                        <Box as="span" flex='1' textAlign='left'>
-                            Away T1
-                        </Box>
-                        <AccordionIcon />
-                    </AccordionButton>
-                </h2>
-                <AccordionPanel pb={4}>
-                    Plays Data
-                </AccordionPanel>
-            </AccordionItem>
-            <AccordionItem>
-                <h2>
-                    <AccordionButton>
-                        <Box as="span" flex='1' textAlign='left'>
-                            Home B1
-                        </Box>
-                        <AccordionIcon />
-                    </AccordionButton>
-                </h2>
-                <AccordionPanel pb={4}>
-                    Plays Data
-                </AccordionPanel>
-            </AccordionItem>
-        </Accordion>)
+interface PlayByPlayProps {
+    playData: PlayTypes;
 }
-export default PlayByPlay
+
+const PlayByPlay: React.FC<PlayByPlayProps> = ({ playData }) => {
+    console.log("AB events:", playData.abOutput);
+
+    return (
+        <Box mx="auto" maxW="lg" >
+            <Accordion allowToggle>
+                {playData.abOutput.map((ab, index) => (
+                    <AccordionItem key={index}>
+                        <AccordionButton>
+                            <Box as="span" flex="1" textAlign="left">
+                                <Heading as='h6' size='xs'>
+                                    {ab.result}
+                                </Heading>
+                            </Box>
+                            <AccordionIcon />
+                        </AccordionButton>
+                        <AccordionPanel pb={4}>
+                            <OrderedList>
+                                {ab.abEventDescriptions
+                                    .filter((event) => !event.includes('Status Change'))
+                                    .map((filteredEvent, eventIndex) => (
+                                        <ListItem key={eventIndex} fontSize='xs'  ml={4}>{filteredEvent}</ListItem>
+                                    ))}
+                            </OrderedList>
+                        </AccordionPanel>
+                    </AccordionItem>
+                ))}
+            </Accordion>
+        </Box>
+    );
+};
+
+export default PlayByPlay;

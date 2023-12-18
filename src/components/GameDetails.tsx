@@ -5,7 +5,12 @@ import { ErrorText, NoDataText } from "../features/ErrorText";
 import BoxScore from "./BoxScore"
 import Gamecast from "./Gamecast"
 import PlayByPlay from "./PlayByPlay";
-import { BoxScoreTypes } from "../util/types";
+import { reformatAPIGameDate } from "../util/helpers";
+import {
+  ABTypes,
+  PlayTypes,
+  BoxScoreTypes
+} from "../util/types";
 import {
   Box,
   Tabs,
@@ -15,8 +20,6 @@ import {
   TabPanel,
   Text,
 } from "@chakra-ui/react";
-import { PlayTypes } from "../util/types";
-import { reformatAPIGameDate } from "../util/helpers";
 
 interface GameDetailsProps {
   gamePk: any
@@ -46,7 +49,10 @@ const GameDetails = ({ gamePk }: GameDetailsProps) => {
   const homeTeam: string = gameData.teams.home.abbreviation
   const awayTeam: string = gameData.teams.away.abbreviation
   const gameDate: string = gameData.datetime.officialDate
-  const players = gameData.players 
+  const players = gameData.players
+
+  // Format date for browser tab (Helmet)
+  const reformattedDate = reformatAPIGameDate(gameDate)
 
   //BOX SCORE DEFINITIONS
   const boxScore = data.data.liveData.boxscore
@@ -70,18 +76,16 @@ const GameDetails = ({ gamePk }: GameDetailsProps) => {
   const totalPlays = allPlays.length
   const currentPlay = allPlays[totalPlays - 1]?.result.description
   const previousPlay = allPlays[totalPlays - 2]?.result.description
-  const lastPlay: string = currentPlay === undefined ? previousPlay : currentPlay
+  const livePlay: string = currentPlay === undefined ? previousPlay : currentPlay
 
-  // Initialize an array to hold play-by-play data
-  const playsOutput: PlayTypes[] = []
+  const abOutput: ABTypes[] = []
 
-  // Iterate through plays to build AB objects
+  // Iterate through plays to build AB objects, default AB length of 1
   for (let i = 0; i < totalPlays; i++) {
     const ab = allPlays[i]
-    // If play has 0 events, default to 1
-    const playLength = typeof ab.playEvents !== "undefined" ? ab.playEvents.length : 1
+    const abLength = typeof ab.playEvents !== "undefined" ? ab.playEvents.length : 1
 
-    const play: PlayTypes = {
+    const abData: ABTypes = {
       gamePk,
       batter: ab.matchup.batter.id,
       batterName: ab.matchup.batter.fullName,
@@ -89,38 +93,37 @@ const GameDetails = ({ gamePk }: GameDetailsProps) => {
       pitcher: ab.matchup.pitcher.id,
       pitcherName: ab.matchup.pitcher.fullName,
       pitchHand: ab.matchup.pitchHand.code,
-      result: ab.result.event,
+      result: ab.result.description,
       inning: ab.about.inning,
-      batterTeam: ab.about.halfInning === 'top' ? awayTeam : homeTeam,
       halfInning: ab.about.halfInning,
+      batterTeam: ab.about.halfInning === 'top' ? awayTeam : homeTeam,
       atBatIndex: ab.atBatIndex,
-      playLength: playLength,
-      id: `${gamePk}-${ab.matchup.batter.id}-${ab.matchup.pitcher.id}-${ab.about.inning}-${ab.atBatIndex}-${playLength}`,
-      playEventDescriptions: [],
+      abLength: abLength,
+      id: `${gamePk}-${ab.matchup.batter.id}-${ab.matchup.pitcher.id}-${ab.about.inning}-${ab.atBatIndex}-${abLength}`,
+      abEventDescriptions: [],
     };
 
-    if (ab.about.halfInning === 'top') {
-      play.batterTeam = awayTeam
-    } else { play.batterTeam = homeTeam }
+    // Create AB event keys
+    abData.id = `${abData.gamePk}-${abData.batter}-${abData.pitcher}-${abData.inning}-${abData.atBatIndex}-${abData.abLength}`;
 
-    play.id = `${play.gamePk}-${play.batter}-${play.pitcher}-${play.inning}-${play.atBatIndex}-${play.playLength}`;
+    // Initialize array to hold AB description
+    abData.abEventDescriptions = [];
 
-    // Initialize an array to hold descriptions for each play
-    play.playEventDescriptions = [];
-
-    // Check if playEvents are available and add descriptions to the array
+    // Check if AB events are available, add AB event description to the array
     ab.playEvents.forEach((event: any) => {
       if (event.details && event.details.description) {
-        play.playEventDescriptions.push(event.details.description);
+        abData.abEventDescriptions.push(event.details.description);
       }
     });
 
-    playsOutput.push(play);
+    abOutput.push(abData);
   }
 
-  console.log("playsOutput:", playsOutput);
-
   //DATA OBJECTS
+  const playData: PlayTypes = {
+    abOutput: abOutput,
+  };
+
   const boxScoreData: BoxScoreTypes = {
     gameStatus,
     players,
@@ -137,17 +140,13 @@ const GameDetails = ({ gamePk }: GameDetailsProps) => {
     homeHits,
     awayErrors,
     homeErrors,
-    playsOutput,
   };
-
-  // Format date for browser tab (Helmet)
-  const reformattedDate = reformatAPIGameDate(gameDate);
 
   return (
     <Box paddingTop={1}>
       <Helmet>
         <title>{awayTeam}@{homeTeam} {reformattedDate}</title>
-        <meta name="description" content="MLB Gameday (jankier but no ads!)" />
+        <meta name="description" content="MLB Gameday (jankier, but no ads!)" />
       </Helmet>
       {gameStatus === "Final" ? (
         <Tabs size='md' variant='enclosed-colored'>
@@ -158,13 +157,13 @@ const GameDetails = ({ gamePk }: GameDetailsProps) => {
           </TabList>
           <TabPanels>
             <TabPanel>
-              <Gamecast gameStatus={gameStatus} lastPlay={lastPlay} />
+              <Gamecast gameStatus={gameStatus} lastPlay={livePlay} />
             </TabPanel>
             <TabPanel>
               <BoxScore boxScoreData={boxScoreData} />
             </TabPanel>
             <TabPanel>
-              <PlayByPlay />
+              <PlayByPlay playData={playData} />
             </TabPanel>
           </TabPanels>
         </Tabs>

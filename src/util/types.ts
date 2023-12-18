@@ -1,5 +1,5 @@
-//GAMECAST
-export interface PlayTypes {
+//PLAY-BY-PLAY
+export interface ABTypes {
   gamePk: any;
   batter: any;
   batterName: any;
@@ -9,13 +9,17 @@ export interface PlayTypes {
   pitchHand: any;
   result: any;
   inning: any;
-  batterTeam: any;
   halfInning: any;
+  batterTeam: any;
   atBatIndex: any;
-  playLength: any;
+  abLength: any;
   id: any;
-  playEventDescriptions: any[];
+  abEventDescriptions: any[];
 }
+
+export interface PlayTypes {
+  abOutput: ABTypes[];
+};
 
 //BOX SCORE
 export interface BoxScoreTypes {
@@ -32,7 +36,6 @@ export interface BoxScoreTypes {
   homeHits: number;
   awayErrors: number;
   homeErrors: number;
-  playsOutput: PlayTypes[];
   innings: Array<{
     num: number;
     home: {
