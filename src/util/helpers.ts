@@ -7,3 +7,10 @@ export function reformatAPIGameDate(game_date: any) {
     const month = dateParts[1];
     return `[${month}/${day}]`;
 }
+
+//PLAY-BY-PLAY//
+
+//Accepts filter[str] and excludes them from the data
+export function excludeFilter(data: string, filter: string[]): boolean {
+    return !filter.some((term) => data.includes(term));
+  };
