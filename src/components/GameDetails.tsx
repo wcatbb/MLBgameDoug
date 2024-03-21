@@ -148,7 +148,7 @@ const GameDetails = ({ gamePk }: GameDetailsProps) => {
         <title>{awayTeam}@{homeTeam} {reformattedDate}</title>
         <meta name="description" content="MLB Gameday (jankier, but no ads!)" />
       </Helmet>
-      {gameStatus === "Final" ? (
+      {gameStatus === "Live" || "Final" ? (
         <Tabs size='md' variant='enclosed-colored'>
           <TabList>
             <Tab>Gamecast</Tab>

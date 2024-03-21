@@ -18,7 +18,7 @@ const Gamecast: React.FC<GamecastProps> = ({ lastPlay, gameStatus }) => {
                 <KZone />
                 <PitchSequence />
             </HStack>
-            {gameStatus === 'Final' ? (<Text>Last Play: {lastPlay}</Text>) :
+            {gameStatus === 'Final' || 'Live' ? (<Text>Last Play: {lastPlay}</Text>) :
                 (<Text></Text>)}
         </VStack>
     )
